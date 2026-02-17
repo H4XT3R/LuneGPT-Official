@@ -1,45 +1,21 @@
-name: Build APK
+name: Build LuneGPT
 on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - name: 🏗️ Create Skeleton
-        run: |
-          flutter create --org com.adamaghnia --project-name lunegpt_app . --overwrite
-
-      - name: 💉 Inject Soul & Fix Versions
-        run: |
-          # 1. Restore your real code
-          rm lib/main.dart
-          git checkout lib/main.dart
-          git checkout pubspec.yaml
-          
-          # 2. Find and fix the minSdkVersion in BOTH file types (.gradle or .kts)
-          # We use 'find' to locate the file even if Flutter moves it
-          find android/app/ -name "build.gradle*" -exec sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 26/g' {} +
-          find android/app/ -name "build.gradle*" -exec sed -i 's/minSdk = flutter.minSdkVersion/minSdk = 26/g' {} +
-          
-          flutter pub get
-
-      - name: 🚀 Build APK
-        run: flutter build apk --release --no-tree-shake-icons
       
-      - name: Upload APK
+      - name: Install NDK
+        run: echo "y" | sudo ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.0.12077973"
+
+      - name: Build Release APK
+        run: flutter build apk --release
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: LuneGPT-Release
