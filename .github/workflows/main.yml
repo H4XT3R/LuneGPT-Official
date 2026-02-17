@@ -15,17 +15,16 @@ jobs:
       - name: Regenerate and Fix SDK
         run: |
           rm -rf android
-          # We use the lowercase name here to match pubspec
           flutter create . --platforms android --project-name lunegpt
           
-          # This magic line finds 'minSdkVersion' and changes it to 26
-          sed -i 's/minSdkVersion .*/minSdkVersion 26/' android/app/build.gradle
+          # This command now targets the .kts file and uses Kotlin syntax
+          sed -i 's/minSdk = .*/minSdk = 26/' android/app/build.gradle.kts
           
       - name: Install NDK
         run: echo "y" | sudo ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.0.12077973"
 
       - name: Build APK
-        run: flutter build apk --release --no-shrink
+        run: flutter build apk --release --no-shake-icons
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
