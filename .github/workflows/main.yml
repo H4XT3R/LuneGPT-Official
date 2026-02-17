@@ -18,10 +18,19 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: 🏗️ Create Android Skeleton
+      - name: 🏗️ Create Skeleton
         run: |
-          # This command builds the missing Gradle structure automatically
+          # 1. Create the project (this makes the counter app)
           flutter create --org com.adamaghnia --project-name lunegpt_app . --overwrite
+
+      - name: 💉 Inject LuneGPT Soul
+        run: |
+          # 2. DELETE the counter app code
+          rm lib/main.dart
+          # 3. RE-CHECKOUT your actual code from GitHub to replace it
+          git checkout lib/main.dart
+          git checkout pubspec.yaml
+          # 4. Refresh dependencies
           flutter pub get
 
       - name: 🚀 Build APK
