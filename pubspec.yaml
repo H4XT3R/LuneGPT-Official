@@ -1,4 +1,4 @@
-name: lunegpt_app
+name: LuneGPT
 description: Elite Intelligence optimized by Adam Aghnia.
 version: 1.0.0+1
 publish_to: 'none'
@@ -9,7 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # Using 'any' allows the solver to bypass the "no versions match" error
   llama_flutter_android: any 
   path_provider: any
   cupertino_icons: any
