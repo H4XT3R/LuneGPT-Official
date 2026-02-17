@@ -1,18 +1,16 @@
-name: lunegpt_app
-description: Offline AI by Adam A.
+name: LuneGPT
+description: Elite Intelligence optimized by Adam Aghnia.
 version: 1.0.0+1
-publish_to: 'none'
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  # The fixed version for the Llama engine
-  llama_flutter_android: ^0.1.1
-  path_provider: ^2.1.0
-  permission_handler: ^11.0.0
+  llama_flutter_android: ^1.1.0
+  path_provider: ^2.1.2
+  cupertino_icons: ^1.0.6
 
 flutter:
   uses-material-design: true
