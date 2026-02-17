@@ -16,6 +16,7 @@ class LuneGPT extends StatefulWidget {
 }
 
 class _LuneGPTState extends State<LuneGPT> {
+  // Using the controller from llama_flutter_android
   final LlamaController _llama = LlamaController();
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -35,13 +36,17 @@ class _LuneGPTState extends State<LuneGPT> {
   }
 
   void _loadBrain() async {
-    // Looks for the file you moved from Google Drive
-    final dir = await getExternalStorageDirectory(); 
-    final path = "${dir!.path}/LuneGPT/brain.gguf";
+    // In version 0.1.1, ensure the path is correct
+    final dir = await getApplicationDocumentsDirectory(); 
+    final path = "${dir.path}/LuneGPT/brain.gguf";
     
     if (await File(path).exists()) {
-      await _llama.loadModel(modelPath: path);
-      setState(() => isLoaded = true);
+      try {
+        await _llama.loadModel(modelPath: path);
+        setState(() => isLoaded = true);
+      } catch (e) {
+        debugPrint("Error loading brain: $e");
+      }
     }
   }
 
@@ -57,18 +62,12 @@ class _LuneGPTState extends State<LuneGPT> {
       isTyping = true;
     });
 
-    // 🌙 YOUR COLAB SYSTEM PROMPT
-    final systemPrompt = "You are LuneGPT, an Elite Intelligence and logical peer optimized by Adam Aghnia. "
-        "PATTERN RECOGNITION | LOGICAL VALIDATION | CLARITY REFINEMENT. "
-        "Tone: Calm, brilliant, professional. No slang. Conciseness is key.";
+    final systemPrompt = "You are LuneGPT, an Elite Intelligence and logical peer optimized by Adam Aghnia. Tone: Calm, professional.";
 
     String response = "";
-    _llama.generateChat(
-      messages: [
-        ChatMessage(role: 'system', content: systemPrompt),
-        ChatMessage(role: 'user', content: userMsg),
-      ],
-      template: 'chatml',
+    // Note: If generateChat template fails, version 0.1.1 uses basic generate
+    _llama.generate(
+      prompt: "<|system|>\n$systemPrompt\n<|user|>\n$userMsg\n<|assistant|>\n",
       temperature: 0.3,
     ).listen((token) {
       response += token;
@@ -79,33 +78,31 @@ class _LuneGPTState extends State<LuneGPT> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF020205),
+      backgroundColor: const Color(0xFF020205),
       drawer: _buildSidebar(),
       appBar: AppBar(
-        title: Text("LUNE GPT", style: TextStyle(letterSpacing: 4, fontWeight: FontWeight.bold)),
-        centerTitle: true,
+        title: const Text("LUNE GPT", style: TextStyle(letterSpacing: 4, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [Icon(Icons.circle, color: isLoaded ? Colors.green : Colors.red, size: 10), SizedBox(width: 20)],
+        actions: [Icon(Icons.circle, color: isLoaded ? Colors.green : Colors.red, size: 10), const SizedBox(width: 20)],
       ),
       body: Column(
         children: [
           Expanded(child: _buildChatList()),
-          if (isTyping) LinearProgressIndicator(color: Colors.deepPurpleAccent, backgroundColor: Colors.transparent),
+          if (isTyping) const LinearProgressIndicator(color: Colors.deepPurpleAccent, backgroundColor: Colors.transparent),
           _buildInput(),
         ],
       ),
     );
   }
 
-  // UI Components (Sidebar, Chat List, Input) follow the premium design...
   Widget _buildSidebar() {
     return Drawer(
-      backgroundColor: Color(0xFF0F0F1A),
+      backgroundColor: const Color(0xFF0F0F1A),
       child: Column(
         children: [
-          SizedBox(height: 60),
-          Text("HISTORY", style: TextStyle(letterSpacing: 2)),
+          const SizedBox(height: 60),
+          const Text("HISTORY", style: TextStyle(letterSpacing: 2)),
           Expanded(
             child: ListView(
               children: allChats.keys.map((k) => ListTile(
@@ -122,7 +119,7 @@ class _LuneGPTState extends State<LuneGPT> {
   Widget _buildChatList() {
     return ListView.builder(
       controller: _scrollController,
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       itemCount: allChats[currentChatKey]!.length,
       itemBuilder: (context, i) {
         var msg = allChats[currentChatKey]![i];
@@ -130,13 +127,13 @@ class _LuneGPTState extends State<LuneGPT> {
         return Align(
           alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
           child: Container(
-            margin: EdgeInsets.only(bottom: 15),
-            padding: EdgeInsets.all(15),
+            margin: const EdgeInsets.only(bottom: 15),
+            padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-              color: isUser ? Color(0xFF6C63FF) : Colors.white.withOpacity(0.08),
+              color: isUser ? const Color(0xFF6C63FF) : Colors.white.withOpacity(0.08),
               borderRadius: BorderRadius.circular(15),
             ),
-            child: Text(msg["text"]!, style: TextStyle(color: Colors.white)),
+            child: Text(msg["text"]!, style: const TextStyle(color: Colors.white)),
           ),
         );
       },
@@ -145,18 +142,18 @@ class _LuneGPTState extends State<LuneGPT> {
 
   Widget _buildInput() {
     return Padding(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             color: Colors.white.withOpacity(0.05),
             child: Row(
               children: [
-                Expanded(child: TextField(controller: _controller, decoration: InputDecoration(hintText: "Message...", border: InputBorder.none))),
-                IconButton(icon: Icon(Icons.send, color: Color(0xFF6C63FF)), onPressed: _sendMessage),
+                Expanded(child: TextField(controller: _controller, decoration: const InputDecoration(hintText: "Message...", border: InputBorder.none))),
+                IconButton(icon: const Icon(Icons.send, color: Color(0xFF6C63FF)), onPressed: _sendMessage),
               ],
             ),
           ),
