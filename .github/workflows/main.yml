@@ -20,17 +20,19 @@ jobs:
 
       - name: 🏗️ Create Skeleton
         run: |
-          # 1. Create the project (this makes the counter app)
           flutter create --org com.adamaghnia --project-name lunegpt_app . --overwrite
 
-      - name: 💉 Inject LuneGPT Soul
+      - name: 💉 Inject Soul & Fix Versions
         run: |
-          # 2. DELETE the counter app code
+          # 1. Restore your real code
           rm lib/main.dart
-          # 3. RE-CHECKOUT your actual code from GitHub to replace it
           git checkout lib/main.dart
           git checkout pubspec.yaml
-          # 4. Refresh dependencies
+          
+          # 2. FORCE the Android Version to 26 (The Fix for your error)
+          # This replaces 'minSdkVersion flutter.minSdkVersion' with 'minSdkVersion 26'
+          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 26/g' android/app/build.gradle
+          
           flutter pub get
 
       - name: 🚀 Build APK
