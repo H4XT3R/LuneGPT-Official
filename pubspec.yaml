@@ -1,4 +1,4 @@
-name: LuneGPT
+name: lunegpt  # MUST be lowercase
 description: Elite Intelligence optimized by Adam Aghnia.
 version: 1.0.0+1
 publish_to: 'none'
