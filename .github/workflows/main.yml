@@ -12,13 +12,17 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Fix Unsupported Gradle Project
+      - name: Regenerate and Fix SDK
         run: |
-          rm -rf android  # Delete the old, broken folder
-          flutter create . --platforms android # Regenerate a fresh, compatible one
+          rm -rf android
+          # We use the lowercase name here to match pubspec
+          flutter create . --platforms android --project-name lunegpt
           
-      - name: Resolve Dependencies
-        run: flutter pub get
+          # This magic line finds 'minSdkVersion' and changes it to 26
+          sed -i 's/minSdkVersion .*/minSdkVersion 26/' android/app/build.gradle
+          
+      - name: Install NDK
+        run: echo "y" | sudo ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.0.12077973"
 
       - name: Build APK
         run: flutter build apk --release --no-shrink
