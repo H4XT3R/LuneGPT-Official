@@ -20,7 +20,7 @@ class _LuneGPTState extends State<LuneGPT> {
     final dir = await getApplicationDocumentsDirectory();
     final path = "${dir.path}/LuneGPT/brain.gguf";
     if (await File(path).exists()) {
-      await _llama.loadModel(modelPath: path, nThreads: 4);
+      await _llama.loadModel(modelPath: path);
       setState(() => isLoaded = true);
     }
   }
