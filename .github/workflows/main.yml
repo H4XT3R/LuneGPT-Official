@@ -1,28 +1,27 @@
-name: Build LuneGPT APK
+name: Build
 on: [push]
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.24.0' # Using a specific stable version
-
-      - name: Setup Android NDK
-        run: |
-          echo "y" | sudo ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.0.12077973"
           
-      - name: Install dependencies
-        run: flutter pub get
+      - name: Install NDK
+        run: echo "y" | sudo ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.0.12077973"
 
+      - name: Resolve Dependencies
+        run: |
+          flutter pub cache repair
+          flutter pub upgrade  # This fixes the "version solving failed" error
+          
       - name: Build APK
-        run: flutter build apk --release --no-shrink
-
-      - name: Upload APK
+        run: flutter build apk --release
+        
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: LuneGPT-Release
+          name: LuneGPT-APK
           path: build/app/outputs/flutter-apk/app-release.apk
