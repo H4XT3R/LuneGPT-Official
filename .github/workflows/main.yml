@@ -1,27 +1,30 @@
-name: Build
+name: Build LuneGPT
 on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          
-      - name: Install NDK
-        run: echo "y" | sudo ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.0.12077973"
 
-      - name: Resolve Dependencies
+      - name: Fix Unsupported Gradle Project
         run: |
-          flutter pub cache repair
-          flutter pub upgrade  # This fixes the "version solving failed" error
+          rm -rf android  # Delete the old, broken folder
+          flutter create . --platforms android # Regenerate a fresh, compatible one
           
+      - name: Resolve Dependencies
+        run: flutter pub get
+
       - name: Build APK
-        run: flutter build apk --release
-        
-      - name: Upload
+        run: flutter build apk --release --no-shrink
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: LuneGPT-APK
+          name: LuneGPT-Release
           path: build/app/outputs/flutter-apk/app-release.apk
