@@ -3,12 +3,13 @@ description: Elite Intelligence optimized by Adam Aghnia.
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.3.0 <4.0.0' # Updated to match package requirements
 
 dependencies:
   flutter:
     sdk: flutter
-  llama_flutter_android: ^1.1.0
+  # FIX: Corrected version to the one available on pub.dev
+  llama_flutter_android: ^0.1.1 
   path_provider: ^2.1.2
   cupertino_icons: ^1.0.6
 
