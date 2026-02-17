@@ -1,21 +1,27 @@
-name: Build LuneGPT
+name: Build LuneGPT APK
 on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      
-      - name: Install NDK
-        run: echo "y" | sudo ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.0.12077973"
+          flutter-version: '3.24.0' # Using a specific stable version
 
-      - name: Build Release APK
-        run: flutter build apk --release
+      - name: Setup Android NDK
+        run: |
+          echo "y" | sudo ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;27.0.12077973"
+          
+      - name: Install dependencies
+        run: flutter pub get
 
-      - name: Upload Artifact
+      - name: Build APK
+        run: flutter build apk --release --no-shrink
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: LuneGPT-Release
